@@ -1,0 +1,31 @@
+# ROS 2 build directories
+build/
+install/
+log/
+
+# Compiled Python files
+__pycache__/
+*.pyc
+
+# Backup files
+*.swp
+*.swo
+*~
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Gazebo model cache
+~/.gazebo/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Large files (optional - uncomment if needed)
+# *.zip
+# *.pdf
+# *.gv

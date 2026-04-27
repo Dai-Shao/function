@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!--
+    Mecanum wheel macro — standing (vertical) orientation.
+    The wheel hub cylinder is rotated 90° around X so it stands upright.
+    Rollers are positioned in a ring around the XZ plane at 45° tilt.
+    Params:
+      prefix       - wheel identifier (front_left, front_right, rear_left, rear_right)
+      parent_link  - parent link name
+      x, y, z      - position offset from parent
+      yaw          - orientation (0 or PI to set roller direction)
+  -->
+  <xacro:macro name="mecanum_wheel" params="prefix parent_link x y z yaw">
+
+    <!-- Wheel link -->
+    <link name="${prefix}_wheel_link">
+      <!-- Hub: cylinder rotated 90° around X to stand upright -->
+      <!-- After rotation: cylinder axis along Y, flat faces left/right -->
+      <visual>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+        <material name="${prefix}_wheel_mat">
+          <color rgba="0.3 0.3 0.3 1.0"/>
+        </material>
+      </visual>
+
+      <!-- Roller visuals: 8 small cylinders around the standing wheel rim -->
+      <!-- Each roller at angle θ on the rim, tilted 45° from Y axis -->
+      <xacro:macro name="roller" params="angle">
+        <visual>
+          <origin xyz="0 ${wheel_radius * 0.85 * cos(angle)} ${wheel_radius * 0.85 * sin(angle)}"
+                  rpy="${angle} 0 ${PI/4}"/>
+          <geometry>
+            <cylinder radius="0.004" length="${wheel_width * 1.1}"/>
+          </geometry>
+          <material name="roller_mat">
+            <color rgba="0.6 0.6 0.6 1.0"/>
+          </material>
+        </visual>
+      </xacro:macro>
+
+      <xacro:roller angle="${0}"/>
+      <xacro:roller angle="${PI/4}"/>
+      <xacro:roller angle="${PI/2}"/>
+      <xacro:roller angle="${3*PI/4}"/>
+      <xacro:roller angle="${PI}"/>
+      <xacro:roller angle="${5*PI/4}"/>
+      <xacro:roller angle="${3*PI/2}"/>
+      <xacro:roller angle="${7*PI/4}"/>
+
+      <!-- Collision: also rotated to match visual -->
+      <collision>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <mass value="${wheel_mass}"/>
+        <inertia ixx="${wheel_ixx}" ixy="0" ixz="0"
+                 iyy="${wheel_iyy}" iyz="0" izz="${wheel_izz}"/>
+      </inertial>
+    </link>
+
+    <!-- Wheel joint: continuous, rotates around Y axis -->
+    <joint name="${prefix}_wheel_joint" type="continuous">
+      <parent link="${parent_link}"/>
+      <child link="${prefix}_wheel_link"/>
+      <origin xyz="${x} ${y} ${z}" rpy="0 0 ${yaw}"/>
+      <axis xyz="0 1 0"/>
+      <limit effort="10" velocity="10"/>
+    </joint>
+
+  </xacro:macro>
+
+</robot>

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Gazebo plugins for mecanum drive -->
+  <!-- Only included when use_gazebo=true -->
+
+  <xacro:macro name="ros2_control_gazebo">
+
+    <!-- Gazebo native mecanum drive plugin — handles wheel commands + odometry -->
+    <gazebo>
+      <plugin filename="gz-sim-mecanum-drive-system"
+              name="gz::sim::systems::MecanumDrive">
+        <front_left_joint>front_left_wheel_joint</front_left_joint>
+        <front_right_joint>front_right_wheel_joint</front_right_joint>
+        <back_left_joint>rear_left_wheel_joint</back_left_joint>
+        <back_right_joint>rear_right_wheel_joint</back_right_joint>
+        <wheel_separation>0.22</wheel_separation>
+        <wheelbase>0.30</wheelbase>
+        <wheel_radius>0.04</wheel_radius>
+        <odom_publish_frequency>50</odom_publish_frequency>
+        <topic>/model/agv_mecanum/cmd_vel</topic>
+        <odom_topic>/model/agv_mecanum/odometry</odom_topic>
+        <tf_topic>/tf</tf_topic>
+        <frame_id>odom</frame_id>
+        <child_frame_id>base_link</child_frame_id>
+      </plugin>
+    </gazebo>
+
+    <!-- Joint state publisher for RViz — publishes wheel joint states to Gazebo topics -->
+    <gazebo>
+      <plugin filename="gz-sim-joint-state-publisher-system"
+              name="gz::sim::systems::JointStatePublisher">
+        <joint_name>front_left_wheel_joint</joint_name>
+        <joint_name>front_right_wheel_joint</joint_name>
+        <joint_name>rear_left_wheel_joint</joint_name>
+        <joint_name>rear_right_wheel_joint</joint_name>
+      </plugin>
+    </gazebo>
+
+  </xacro:macro>
+
+</robot>

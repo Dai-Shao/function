@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<robot name="agv_mecanum" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="use_gazebo" default="true"/>
+
+  <!-- Include property definitions -->
+  <xacro:include filename="$(find agv_mecanum_description)/urdf/agv_properties.xacro"/>
+  <xacro:include filename="$(find agv_mecanum_description)/urdf/mecanum_wheel.xacro"/>
+  <xacro:include filename="$(find agv_mecanum_description)/urdf/sensors.xacro"/>
+  <xacro:include filename="$(find agv_mecanum_description)/urdf/ros2_control.xacro"/>
+
+  <!-- ========== Base Link ========== -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${base_x} ${base_y} ${base_z}"/>
+      </geometry>
+      <material name="base_mat">
+        <color rgba="0.2 0.4 0.8 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${base_x} ${base_y} ${base_z}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="${base_mass}"/>
+      <inertia ixx="${base_ixx}" ixy="0" ixz="0"
+               iyy="${base_iyy}" iyz="0" izz="${base_izz}"/>
+    </inertial>
+  </link>
+
+  <!-- ========== 4 Mecanum Wheels ========== -->
+  <!-- Mecanum arrangement: ◣◥ / ◤◢ -->
+  <!-- Front-left and rear-right: yaw=0 (rollers at +45°) -->
+  <!-- Front-right and rear-left: yaw=PI (rollers at -45°) -->
+  <xacro:mecanum_wheel prefix="front_left"  parent_link="base_link"
+    x="${lx}"  y="${ly}"   z="${-base_z/2}" yaw="0"/>
+  <xacro:mecanum_wheel prefix="front_right" parent_link="base_link"
+    x="${lx}"  y="${-ly}"  z="${-base_z/2}" yaw="${PI}"/>
+  <xacro:mecanum_wheel prefix="rear_left"   parent_link="base_link"
+    x="${-lx}" y="${ly}"   z="${-base_z/2}" yaw="${PI}"/>
+  <xacro:mecanum_wheel prefix="rear_right"  parent_link="base_link"
+    x="${-lx}" y="${-ly}"  z="${-base_z/2}" yaw="0"/>
+
+  <!-- ========== Sensors ========== -->
+  <xacro:lidar_sensor parent_link="base_link"
+    z_offset="${base_z/2 + lidar_height}"/>
+  <xacro:imu_sensor parent_link="base_link"
+    z_offset="${base_z/2 - 0.01}"/>
+
+  <!-- ========== ros2_control (Gazebo) ========== -->
+  <xacro:if value="$(arg use_gazebo)">
+    <xacro:ros2_control_gazebo/>
+  </xacro:if>
+
+</robot>

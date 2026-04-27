@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ========== 360° LiDAR Sensor ========== -->
+  <xacro:macro name="lidar_sensor" params="parent_link z_offset">
+
+    <link name="base_laser_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="${lidar_radius}" length="${lidar_length}"/>
+        </geometry>
+        <material name="lidar_mat">
+          <color rgba="0.8 0.2 0.2 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="${lidar_radius}" length="${lidar_length}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.1"/>
+        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      </inertial>
+    </link>
+
+    <joint name="base_laser_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="base_laser_link"/>
+      <origin xyz="0 0 ${z_offset}" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Gazebo Harmonic sensor: sensor MUST be inside <gazebo reference> -->
+    <gazebo reference="base_laser_link">
+      <sensor name="lidar" type="gpu_lidar">
+        <always_on>true</always_on>
+        <update_rate>10</update_rate>
+        <visualize>true</visualize>
+        <gz_frame_id>base_laser_link</gz_frame_id>
+        <topic>/scan</topic>
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>180</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.14159</min_angle>
+              <max_angle>3.14159</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.1</min>
+            <max>50.0</max>
+            <resolution>0.01</resolution>
+          </range>
+        </lidar>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="base_laser_joint">
+      <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+
+  </xacro:macro>
+
+  <!-- ========== IMU Sensor ========== -->
+  <xacro:macro name="imu_sensor" params="parent_link z_offset">
+
+    <link name="imu_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.04 0.04 0.02"/>
+        </geometry>
+        <material name="imu_mat">
+          <color rgba="0.1 0.1 0.1 1.0"/>
+        </material>
+      </visual>
+      <inertial>
+        <mass value="0.05"/>
+        <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+      </inertial>
+    </link>
+
+    <joint name="imu_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="imu_link"/>
+      <origin xyz="0 0 ${z_offset}" rpy="0 0 0"/>
+    </joint>
+
+    <gazebo reference="imu_link">
+      <sensor name="imu" type="imu">
+        <always_on>true</always_on>
+        <update_rate>100</update_rate>
+        <gz_frame_id>imu_link</gz_frame_id>
+        <topic>/imu</topic>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="imu_joint">
+      <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+
+  </xacro:macro>
+
+</robot>

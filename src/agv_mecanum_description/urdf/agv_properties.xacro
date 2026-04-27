@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ========== Constants ========== -->
+  <xacro:property name="PI" value="3.14159265358979"/>
+
+  <!-- ========== Base Link Properties ========== -->
+  <xacro:property name="base_x" value="0.40"/>   <!-- length -->
+  <xacro:property name="base_y" value="0.30"/>   <!-- width -->
+  <xacro:property name="base_z" value="0.10"/>   <!-- height -->
+  <xacro:property name="base_mass" value="10.0"/>
+
+  <!-- Box inertia: Ixx = m/12*(y^2+z^2), etc. -->
+  <xacro:property name="base_ixx" value="${base_mass/12 * (base_y*base_y + base_z*base_z)}"/>
+  <xacro:property name="base_iyy" value="${base_mass/12 * (base_x*base_x + base_z*base_z)}"/>
+  <xacro:property name="base_izz" value="${base_mass/12 * (base_x*base_x + base_y*base_y)}"/>
+
+  <!-- ========== Mecanum Wheel Properties ========== -->
+  <xacro:property name="wheel_radius" value="0.04"/>
+  <xacro:property name="wheel_width" value="0.025"/>
+  <xacro:property name="wheel_mass" value="0.2"/>
+
+  <!-- Cylinder inertia for wheel: Ixx = m/12*(3r^2+h^2), Iyy = m/2*r^2 -->
+  <xacro:property name="wheel_ixx" value="${wheel_mass/12 * (3*wheel_radius*wheel_radius + wheel_width*wheel_width)}"/>
+  <xacro:property name="wheel_iyy" value="${wheel_mass/2 * wheel_radius * wheel_radius}"/>
+  <xacro:property name="wheel_izz" value="${wheel_mass/12 * (3*wheel_radius*wheel_radius + wheel_width*wheel_width)}"/>
+
+  <!-- ========== Wheel Positions ========== -->
+  <!-- Half wheelbase (center to front/rear axle) -->
+  <xacro:property name="lx" value="0.15"/>
+  <!-- Half track (center to left/right wheel) -->
+  <xacro:property name="ly" value="0.11"/>
+  <!-- Key parameter for mecanum_drive_controller -->
+  <xacro:property name="sum_xy" value="${lx + ly}"/>
+
+  <!-- ========== Sensor Properties ========== -->
+  <xacro:property name="lidar_height" value="0.02"/>
+  <xacro:property name="lidar_radius" value="0.03"/>
+  <xacro:property name="lidar_length" value="0.04"/>
+
+</robot>
