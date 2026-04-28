@@ -29,3 +29,6 @@ __pycache__/
 # *.zip
 # *.pdf
 # *.gv
+
+# Claude settings
+.claude/
